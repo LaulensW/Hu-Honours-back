@@ -1,10 +1,10 @@
-use axum::{Router, middleware};
+use axum::{middleware, Router};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use tokio;
 
-mod handlers;
 mod auth_middleware;
+mod handlers;
 mod models;
 
 #[derive(Clone)]
@@ -14,11 +14,14 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let database_url = "postgres://postgres:Solexjedragon12%2C%2C%3F%3F@localhost:5432/honours";
+    dotenvy::dotenv().ok();
+    let database_url =
+        std::env::var("DATABASE_URL").expect("DATABASE_URL must be set in the environment");
+
     println!("Connecting to: {}", database_url);
     let db = PgPoolOptions::new()
         .max_connections(5)
-        .connect(database_url)
+        .connect(&database_url)
         .await
         .expect("Failed to connect to PostgreSQL");
 
